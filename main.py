@@ -6,12 +6,22 @@ import sqlite3
 import uvicorn
 from PIL import Image
 import requests
-
+import shelve 
 
 app= FastAPI()
 
-MODEL= tf.keras.models.load_model("../saved_models/1")
+MODEL= tf.keras.models.load_model("../saved_models/2")
 
+
+
+ 
+# print("All entries are successfully made inside the sample shelve file")  
+# # Importing the Shelve Module  
+ 
+# # Opening the sample shelve file with open() function  
+# shelveVariable = shelve.open("information")  
+# # Print all data entries from the sample shelve file in list form  
+# print("Items in the sample shelve file: ", list(shelveVariable.items()))  
 
 CLASS_NAMES=[
  "Apple___healthy",
@@ -23,6 +33,7 @@ CLASS_NAMES=[
  "Potato___healthy",
  "Tomato___Bacterial_spot",
  "Tomato___Early_blight"]
+
 
 # Define a function to read the uploaded file as an image
 def read_file_as_image(data)-> np.ndarray:
@@ -47,15 +58,31 @@ async def upload_file(
         }
     
 
-temperature = 0 
-humidity = 0  
-heatindex=0
-moisturevaluee=0
+temp =0
+humidity_glob  =0
+heatindex_glob =0
+moisturevalue_glob =0
    
 @app.get("/update_sensor")
-def update_sensor(temperature=0):
-    return {"temperature": temperature, "humidity": humidity,"heatindex":heatindex}
+def update_sensor(temperature,humidity,heatindex,moisturevalue):
 
+    global temp ,humidity_glob,heatindex_glob,moisturevalue_glob
+    temp=temperature
+    humidity_glob=humidity
+    heatindex_glob=heatindex
+    moisturevalue_glob=moisturevalue
+
+    
+    return {"temperature": temperature, "humidity": humidity,"heatindex":heatindex,"moisturevalue":moisturevalue}
+
+
+
+
+@app.get("/view_sensor_data")
+def view_sensor():
+  
+    print(temp)
+    return {"temperature": temp,"humid":humidity_glob,"heatindex":heatindex_glob,"moisturevalue":moisturevalue_glob}
 
 
 if __name__ == "__main__":
